@@ -5,9 +5,6 @@ class memPage_t{
 
 public:
 
-	//Static Member
-	static int PageSize;
-	
 	//CTOR & DTOR
 	memPage_t();										//default CTOR
 	~memPage_t();										//DTOR
@@ -32,7 +29,7 @@ private:
 
 	//Disabling copy
 	memPage_t(const memPage_t &m);						//disable copy CTOR
-	const memPage_t operator=(const memPage_t &m);		//disable assignment operator
+	const memPage_t &operator=(const memPage_t &m);		//disable assignment operator
 
 
 
