@@ -5,7 +5,8 @@
 
 class memPage_t{
 
-		//TODO: make memPage internal to memPool only
+	//TODO: make memPage internal to memPool only
+
 public:
 
 	//Static Member
@@ -22,8 +23,8 @@ public:
 	//page status information
 	bool IsPageEmpty();									//is page empty
 	bool IsPageFull();									//is page Full
-	int GetActualSize();									//actual size of a page(how many bytes really written in page)
-	int GetCapacity();										//capacity of a page (length)
+	int GetActualSize();								//actual size of a page(how many bytes really written in page)
+	int GetCapacity();									//capacity of a page (length)
 	
 	template<class T>
 	T* read(int sizeOfT);								//read data from page
