@@ -22,6 +22,14 @@ memPage_t::~memPage_t(){
 	delete[] buffer;
 }
 
+memPage_t::memPage_t(const memPage_t &m) : _capacity(m._capacity), _position(m._position), _size(m._capacity){
+
+	_allocateBuffer();
+
+	memcpy(buffer, m.buffer, _size);
+
+}
+
 /*****************
  * Public Methods
  *****************/
@@ -55,8 +63,13 @@ int memPage_t::_write(void *t, int size, int pos){
 	memcpy(&buffer[pos], t, size);
 
 	//Update size & pos
-	_size += size;
 	_position = pos + size;
+
+	if (_position > _size - 1){
+		_size = _position + 1;
+	}
+	_size += size;
+
 
 
 	return size;

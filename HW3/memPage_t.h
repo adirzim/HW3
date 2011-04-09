@@ -15,8 +15,9 @@ public:
 
 	//CTOR & DTOR
 	memPage_t();										//default CTOR - from PageSize
-	memPage_t(int size);								//CTOR from user size
+	explicit memPage_t(int size);								//CTOR from user size
 	~memPage_t();										//DTOR
+	memPage_t(const memPage_t &m);						//Copy CTOR for STL implementation //TODO: make memPool_t Friend?
 
 	void setPosition(int position);						//set current position in memory page (value between 0 to _size)
 	int GetPosition() const;							//get current position in memory page
@@ -42,7 +43,7 @@ public:
 private:
 
 	//Disabling copy of memPage_t
-	memPage_t(const memPage_t &m);						//disable copy CTOR NOTE: Not Implemented!
+							//disable copy CTOR NOTE: Not Implemented!
 	const memPage_t &operator=(const memPage_t &m);		//disable assignment operator NOTE: Note Implemented!
 
 

@@ -3,6 +3,7 @@
  *
  */
 #include "memPage_t.h"
+#include "memPool_t.h"
 #include <iostream>
 
 using namespace std;
@@ -11,6 +12,7 @@ using namespace std;
 int main (int argc, int **argv){
 
 	memPage_t p;
+
 
 	int k = 5;
 	int j;
@@ -28,8 +30,12 @@ int main (int argc, int **argv){
 
 	cout << "j: " << j;
 
+	memPool_t pool;
+
+	//cout << pool.GetCurrentPosition();
 
 
+	return 0;
 
 }
 
