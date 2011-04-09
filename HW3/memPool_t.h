@@ -42,7 +42,7 @@ public:
 
 	//default size of memPage
 	int GetDefaultPageSize() const;							//get default memory page size
-	void SetDefaultPageSize() const;						//set default memory page size
+	void SetDefaultPageSize(int size) const;				//set default memory page size
 
 private:
 
@@ -59,8 +59,30 @@ private:
 
 };
 
-inline int memPool_t::GetCurrentPosition() const{
-	return ((memPage_t) (*_currentPage)).GetPosition();
+inline bool memPool_t::IsEmpty() const{
+	return _size == 0;
+}
+
+inline int memPool_t::GetActualSize() const{
+	return _size;
+}
+
+inline int memPool_t::GetCapacity() const{
+	return _capacity;
+}
+
+inline int memPool_t::GetNumberOfPages() const{
+	return _pool.size();
+}
+
+inline 	int memPool_t::GetDefaultPageSize() const{
+	return memPage_t::PageSize;
+}
+
+inline void memPool_t::SetDefaultPageSize(int size) const{
+
+	memPage_t::PageSize = size;
+
 }
 
 #endif

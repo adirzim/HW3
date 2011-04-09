@@ -28,11 +28,11 @@ int main (int argc, int **argv){
 
 	cout << p << endl;
 
-	cout << "j: " << j;
+	cout << "j: " << j << endl;
 
 	memPool_t pool;
 
-	//cout << pool.GetCurrentPosition();
+	cout << pool.GetActualSize();
 
 
 	return 0;

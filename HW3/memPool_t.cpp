@@ -26,7 +26,6 @@ memPool_t::memPool_t(int pageNumber) : _size(0), _capacity(0){
 }
 
 memPool_t::~memPool_t(){
-	//TODO: Do we need do free mem?
 
 }
 
