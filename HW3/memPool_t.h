@@ -1,5 +1,5 @@
 #ifndef MemPool_t_H_ 
-#endif MemPool_t_H_
+#define MemPool_t_H_
 
 #include "memPage_t.h"
 
@@ -7,9 +7,11 @@ class memPool_t{
 
 public:
 
+	//TODO: COnst functions
+
 	//CTOR & DTOR
 	memPool_t();										//default CTOR - 1 empty page
-	memPool_t(int pageNumber);							//CTOR from number of empty page to initialize
+	explicit memPool_t(int pageNumber);					//CTOR from number of empty page to initialize
 	~memPool_t();										//DTOR
 
 	//public methods
@@ -42,3 +44,5 @@ private:
 	//TODO: choose STL to store memPage
 
 };
+
+#endif
