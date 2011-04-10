@@ -8,7 +8,7 @@ using namespace std;
  * CTORs and DTOR
  *****************/
 
-memPool_t::memPool_t() : _size(0), _capacity(0){
+memPool_t::memPool_t() : _size(0), _capacity(0), _position(0){
 
 	createNewMemPage();
 
@@ -16,7 +16,7 @@ memPool_t::memPool_t() : _size(0), _capacity(0){
 
 }
 
-memPool_t::memPool_t(int pageNumber) : _size(0), _capacity(0){
+memPool_t::memPool_t(int pageNumber) : _size(0), _capacity(0), _position(0){
 
 	for (int i = 0; i < pageNumber; i++){
 
@@ -47,22 +47,22 @@ void memPool_t::createNewMemPage(){
 	_pool.push_back(page);
 }
 
-int memPool_t::GetCurrentPosition() const{
-
-	//TODO: Implement in LOG(n)
-
-	int pos = 0;
-
-
-	for (list<memPage_t>::const_iterator it = _pool.begin(); it != _currentPage; it++){
-		pos += ((memPage_t) *it).GetCapacity();
-	}
-
-	pos += ((memPage_t)*_currentPage).GetPosition();
-
-	return pos;
-
-}
+//int memPool_t::GetCurrentPosition() const{
+//
+//	//TODO: Implement in LOG(n)
+//
+//	int pos = 0;
+//
+//
+//	for (list<memPage_t>::const_iterator it = _pool.begin(); it != _currentPage; it++){
+//		pos += ((memPage_t) *it).GetCapacity();
+//	}
+//
+//	pos += ((memPage_t)*_currentPage).GetPosition();
+//
+//	return pos;
+//
+//}
 
 void memPool_t::SetCurrentPosition(int newPosition){
 
@@ -72,19 +72,25 @@ void memPool_t::SetCurrentPosition(int newPosition){
 		return;
 	}
 
+	_position = 0;
+
 	list<memPage_t>::iterator it = _pool.begin();
 
 	//Find relevant page
-	while (newPosition >= ((memPage_t) *it).GetCapacity()){
-		newPosition -= ((memPage_t) *it).GetCapacity();
+	while (newPosition >= ((memPage_t &) *it).GetCapacity()){
+		newPosition -= ((memPage_t &) *it).GetCapacity();
+		_position += ((memPage_t &) *it).GetCapacity();
 		it++;
 	}
 
 	//Set Current page
 	_currentPage = it;
 
+	_position += newPosition;
+
 	//Set Position in page
-	((memPage_t) *it).setPosition(newPosition);
+	((memPage_t &) *it).setPosition(newPosition);
+
 
 }
 
@@ -92,4 +98,11 @@ void memPool_t::SetCurrentPosition(int newPosition){
  * Private methods
  *****************/
 
+ostream &operator<< (ostream &os, memPool_t &p){
 
+	return os << "Pool size: " << p.GetActualSize() << '\n'
+			<< "Pool capacity: " << p.GetCapacity() << '\n'
+			<< "Number of pages: " << p.GetNumberOfPages() << '\n'
+			<< "Position: " << p.GetCurrentPosition() << '\n';
+
+}

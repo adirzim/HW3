@@ -28,11 +28,11 @@ public:
 	int GetActualSize() const;							//actual size of a page(how many bytes really written in page)
 	int GetCapacity() const;							//capacity of a page (length)
 	
-	template<class T> int read(const T &t, int size, int pos);		//read data from page, return number of bytes read
+	template<class T> int read(T &t, int size, int pos);		//read data from page, return number of bytes read
 	template<class T> int write(const T &t, int size, int pos);		//write data to page, return number of bytes written
 
 	template<class T> int write(const T &t, int size);
-	template<class T> int read(const T &t, int size);
+	template<class T> int read(T &t, int size);
 
 
 	friend ostream &operator<<(ostream &os, memPage_t &p);
@@ -87,7 +87,7 @@ inline int memPage_t::GetPosition() const{
 	return _position;
 }
 
-template<class T> int memPage_t::read(const T& t, int size, int pos){
+template<class T> int memPage_t::read(T& t, int size, int pos){
 	return _read((void *)&t, size, pos);
 }
 
@@ -99,7 +99,7 @@ template<class T> int memPage_t::write(const T &t, int size){
 	return _write((void *)&t, size, _position);
 }
 
-template<class T> int memPage_t::read(const T& t, int size){
+template<class T> int memPage_t::read(T& t, int size){
 	return _read((void *)&t, size, _position);
 }
 

@@ -20,8 +20,8 @@ public:
 	int GetCurrentPosition() const;						//get the current position in the memPool_t (how many bytes really written in memPool_t
 	void SetCurrentPosition(int newPosition);			//set the current position (between 0-PageSize)
 
-	template<class T> int read(const T &t, int size);					//read data from manager
-	template<class T> int read(const T &t, int size, int pos);
+	template<class T> int read(T &t, int size);					//read data from manager
+	template<class T> int read(T &t, int size, int pos);
 
 	template<class T> int write(const T &t, int size);			//write data to manager
 	template<class T> int write(const T &t, int size, int pos);
@@ -36,13 +36,15 @@ public:
 
 
 	//TODO: Should this be public?
-	const memPage_t *GetFirstMemPage() const;				//get pointer to the first memory page
-	const memPage_t *GetLastMemPgae() const;				//get pointer to the last memory page
-	const memPage_t *GetCurrentMemPage() const;				//get pointer to the current memory page
+	const memPage_t &GetFirstMemPage() const;				//get pointer to the first memory page
+	const memPage_t &GetLastMemPgae() const;				//get pointer to the last memory page
+	memPage_t &GetCurrentMemPage();					//get pointer to the current memory page
 
 	//default size of memPage
 	int GetDefaultPageSize() const;							//get default memory page size
 	void SetDefaultPageSize(int size) const;				//set default memory page size
+
+	friend ostream &operator<< (ostream &os, memPool_t &p);
 
 private:
 
@@ -54,6 +56,7 @@ private:
 	int _size;
 	int _capacity;
 	list<memPage_t>::iterator _currentPage;
+	int _position;
 
 	list<memPage_t> _pool;
 
@@ -85,19 +88,24 @@ inline void memPool_t::SetDefaultPageSize(int size) const{
 
 }
 
+inline int memPool_t::GetCurrentPosition() const{
+	return _position;
+}
+
 /**
  * Read from current position
  */
-template<class T> int memPool_t::read(const T &t, int size){
+template<class T> int memPool_t::read(T &t, int size){
 
-	if (GetCurrentPosition() + size > GetActualSize() - 1){ //Position + size > total written bytes!
+	if (_position + size > GetActualSize()){ //Position + size > total written bytes!
 		return 0;
 	}
 
-	void *pos = (void *)&t; //Get address of object to read
+	char *pos = (char *)&t; //Get address of object to read
 
-	int tmp = ((memPage_t) *_currentPage).read(t, size);
+	int tmp = ((memPage_t &) *_currentPage).read(t, size);
 	int totalRead = tmp;
+
 
 	while (tmp < size){
 
@@ -108,10 +116,13 @@ template<class T> int memPool_t::read(const T &t, int size){
 		((memPage_t) *_currentPage).setPosition(0);
 
 
-		tmp = ((memPage_t) *_currentPage).read(pos, size);
+		tmp = ((memPage_t &) *_currentPage).read(pos, size);
 
 		totalRead += tmp;
 	}
+
+	//Update position
+	_position += totalRead;
 
 	return totalRead;
 
@@ -120,7 +131,7 @@ template<class T> int memPool_t::read(const T &t, int size){
 /**
  * Read from pos (setPosition & then read)
  */
-template<class T> int memPool_t::read(const T &t, int size, int pos){
+template<class T> int memPool_t::read(T &t, int size, int pos){
 
 	SetCurrentPosition(pos);
 
@@ -128,32 +139,42 @@ template<class T> int memPool_t::read(const T &t, int size, int pos){
 
 }
 
-template<class T> int write(const T &t, int size){
+template<class T> int memPool_t::write(const T &t, int size){
 
-//	if (size > GetActualSize()){ //Nothing to read (Not written yet)
-//		return 0;
-//	}
-//
-//	void *pos = (void *)&t; //Get address of object to read
-//
-//	int tmp = ((memPage_t) *_currentPage).read(t, size);
-//	int totalRead = tmp;
-//
-//	while (tmp < size){
-//
-//		size -= tmp;
-//		pos += tmp;
-//
-//		_currentPage++;
-//		((memPage_t) *_currentPage).setPosition(0);
-//
-//
-//		tmp = ((memPage_t) *_currentPage).read(pos, size);
-//
-//		totalRead += tmp;
-//	}
-//
-//	return totalRead;
+	if (_position  > GetActualSize()){ //Don't allow "Holes" in memory
+		return 0;
+	}
+
+	char *pos = (char *)&t; //Get address of object to write
+
+	int tmp = ((memPage_t &) *_currentPage).write(t, size);
+
+	memPage_t &p = ((memPage_t &) *_currentPage);
+
+	int totalWrote = tmp;
+
+	while (tmp < size){
+
+		size -= tmp;
+		pos += tmp;
+
+		//Create new page
+		createNewMemPage();
+
+		_currentPage++;
+
+		((memPage_t &) *_currentPage).setPosition(0);
+
+
+		tmp = ((memPage_t &) *_currentPage).write(pos, size);
+
+		totalWrote += tmp;
+	}
+
+	_position += totalWrote;
+	_size += totalWrote;
+
+	return totalWrote;
 
 }
 
@@ -164,4 +185,9 @@ template<class T> int memPool_t::write(const T &t, int size, int pos){
 	return write(t, size);
 
 }
+
+inline memPage_t &memPool_t::GetCurrentMemPage(){
+	return ((memPage_t &) *_currentPage);
+}
+
 #endif

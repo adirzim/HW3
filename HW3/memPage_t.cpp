@@ -65,9 +65,9 @@ int memPage_t::_write(void *t, int size, int pos){
 	//Update size & pos
 	_position = pos + size;
 
-	if (_position > _size - 1){
-		_size = _position + 1;
-	}
+//	if (_position > _size - 1){
+//		_size = _position + 1;
+//	}
 	_size += size;
 
 
