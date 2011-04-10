@@ -34,7 +34,21 @@ memPage_t::memPage_t(const memPage_t &m) : _capacity(m._capacity), _position(m._
  * Public Methods
  *****************/
 
+int memPage_t::read(char *t, int size, int pos){
+	return _read(t, size, pos);
+}
 
+int memPage_t::write(char *t, int size, int pos){
+	return _write(t, size, pos);
+}
+
+int memPage_t::write(char *t, int size){
+	return _write(t, size, _position);
+}
+
+int memPage_t::read(char *t, int size){
+	return _read(t, size, _position);
+}
 
 
 /*****************
@@ -46,7 +60,7 @@ void memPage_t::_allocateBuffer(){
 
 }
 
-int memPage_t::_write(void *t, int size, int pos){
+int memPage_t::_write(char *t, int size, int pos){
 
 	//Do not allow "Holes" in mem page
 	if (pos > size){
@@ -76,7 +90,7 @@ int memPage_t::_write(void *t, int size, int pos){
 
 }
 
-int memPage_t::_read(void *t, int size, int pos){
+int memPage_t::_read(char *t, int size, int pos){
 
 	//Do not allow reading more than size
 	if (pos > size - 1){

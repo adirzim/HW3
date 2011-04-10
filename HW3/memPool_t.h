@@ -156,10 +156,13 @@ template<class T> int memPool_t::write(const T &t, int size){
 		size -= tmp;
 		pos += tmp;
 
-		//Create new page
-		createNewMemPage();
-
+		
 		_currentPage++;
+
+        if (_currentPage == _pool.end()){
+            //Create new page
+            createNewMemPage();
+        }
 
 		((memPage_t &) *_currentPage).setPosition(0);
 

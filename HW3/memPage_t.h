@@ -28,11 +28,11 @@ public:
 	int GetActualSize() const;							//actual size of a page(how many bytes really written in page)
 	int GetCapacity() const;							//capacity of a page (length)
 	
-	template<class T> int read(T &t, int size, int pos);		//read data from page, return number of bytes read
-	template<class T> int write(const T &t, int size, int pos);		//write data to page, return number of bytes written
+	int read(char *t, int size, int pos);		//read data from page, return number of bytes read
+	int write(char *t, int size, int pos);		//write data to page, return number of bytes written
 
-	template<class T> int write(const T &t, int size);
-	template<class T> int read(T &t, int size);
+	int write(char *t, int size);
+	int read(char *t, int size);
 
 
 	friend ostream &operator<<(ostream &os, memPage_t &p);
@@ -51,8 +51,8 @@ private:
 	void _allocateBuffer(); 							//Init memPage members
 
 	//TODO: Use Template? User void *?
-	int _write(void *t, int size, int pos); 			//Perform actual write
-	int _read(void *t, int size, int pos); 				//Perform actual read
+	int _write(char *t, int size, int pos); 			//Perform actual write
+	int _read(char *t, int size, int pos); 				//Perform actual read
 
 	//Page data members
 	const int _capacity;								//capacity of a page in bytes
@@ -87,21 +87,7 @@ inline int memPage_t::GetPosition() const{
 	return _position;
 }
 
-template<class T> int memPage_t::read(T& t, int size, int pos){
-	return _read((void *)&t, size, pos);
-}
 
-template<class T> int memPage_t::write(const T &t, int size, int pos){
-	return _write((void *)&t , size, pos);
-}
-
-template<class T> int memPage_t::write(const T &t, int size){
-	return _write((void *)&t, size, _position);
-}
-
-template<class T> int memPage_t::read(T& t, int size){
-	return _read((void *)&t, size, _position);
-}
 
 
 #endif
