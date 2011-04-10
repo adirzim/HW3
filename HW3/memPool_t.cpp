@@ -1,5 +1,8 @@
 #include "memPool_t.h"
+#include "memPage_t.h"
 #include <list>
+
+using namespace std;
 
 /*****************
  * CTORs and DTOR
@@ -43,3 +46,50 @@ void memPool_t::createNewMemPage(){
 
 	_pool.push_back(page);
 }
+
+int memPool_t::GetCurrentPosition() const{
+
+	//TODO: Implement in LOG(n)
+
+	int pos = 0;
+
+
+	for (list<memPage_t>::const_iterator it = _pool.begin(); it != _currentPage; it++){
+		pos += ((memPage_t) *it).GetCapacity();
+	}
+
+	pos += ((memPage_t)*_currentPage).GetPosition();
+
+	return pos;
+
+}
+
+void memPool_t::SetCurrentPosition(int newPosition){
+
+	//TODO: Implement in LOG(n)
+
+	if (newPosition > GetActualSize()){ //Invalid position
+		return;
+	}
+
+	list<memPage_t>::iterator it = _pool.begin();
+
+	//Find relevant page
+	while (newPosition >= ((memPage_t) *it).GetCapacity()){
+		newPosition -= ((memPage_t) *it).GetCapacity();
+		it++;
+	}
+
+	//Set Current page
+	_currentPage = it;
+
+	//Set Position in page
+	((memPage_t) *it).setPosition(newPosition);
+
+}
+
+/*****************
+ * Private methods
+ *****************/
+
+

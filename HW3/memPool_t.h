@@ -85,4 +85,83 @@ inline void memPool_t::SetDefaultPageSize(int size) const{
 
 }
 
+/**
+ * Read from current position
+ */
+template<class T> int memPool_t::read(const T &t, int size){
+
+	if (GetCurrentPosition() + size > GetActualSize() - 1){ //Position + size > total written bytes!
+		return 0;
+	}
+
+	void *pos = (void *)&t; //Get address of object to read
+
+	int tmp = ((memPage_t) *_currentPage).read(t, size);
+	int totalRead = tmp;
+
+	while (tmp < size){
+
+		size -= tmp;
+		pos += tmp;
+
+		_currentPage++;
+		((memPage_t) *_currentPage).setPosition(0);
+
+
+		tmp = ((memPage_t) *_currentPage).read(pos, size);
+
+		totalRead += tmp;
+	}
+
+	return totalRead;
+
+}
+
+/**
+ * Read from pos (setPosition & then read)
+ */
+template<class T> int memPool_t::read(const T &t, int size, int pos){
+
+	SetCurrentPosition(pos);
+
+	return read(t, size);
+
+}
+
+template<class T> int write(const T &t, int size){
+
+//	if (size > GetActualSize()){ //Nothing to read (Not written yet)
+//		return 0;
+//	}
+//
+//	void *pos = (void *)&t; //Get address of object to read
+//
+//	int tmp = ((memPage_t) *_currentPage).read(t, size);
+//	int totalRead = tmp;
+//
+//	while (tmp < size){
+//
+//		size -= tmp;
+//		pos += tmp;
+//
+//		_currentPage++;
+//		((memPage_t) *_currentPage).setPosition(0);
+//
+//
+//		tmp = ((memPage_t) *_currentPage).read(pos, size);
+//
+//		totalRead += tmp;
+//	}
+//
+//	return totalRead;
+
+}
+
+template<class T> int memPool_t::write(const T &t, int size, int pos){
+
+	SetCurrentPosition(pos);
+
+	return write(t, size);
+
+}
 #endif

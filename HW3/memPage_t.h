@@ -44,7 +44,7 @@ private:
 
 	//Disabling copy of memPage_t
 							//disable copy CTOR NOTE: Not Implemented!
-	const memPage_t &operator=(const memPage_t &m);		//disable assignment operator NOTE: Note Implemented!
+	//const memPage_t &operator=(const memPage_t &m);		//disable assignment operator NOTE: Note Implemented!
 
 
 
