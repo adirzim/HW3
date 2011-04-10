@@ -12,13 +12,19 @@ using namespace std;
 
 int main (int argc, int **argv){
 
-	memPool_t p;
+	
 
 
 	int k = 5;
 	int j;
 
+   // memPage_t::PageSize = 2;
+
+    memPool_t p;
+
 	cout << p << endl;
+
+    //p.SetDefaultPageSize(1);
 
 	p.write(k, sizeof(k));
 
@@ -26,7 +32,7 @@ int main (int argc, int **argv){
 
 	//p.GetCurrentMemPage().read(j, sizeof(j), 0);
 
-	cout << p.GetCurrentMemPage() << endl;
+	//cout << p.GetCurrentMemPage() << endl;
 
 	//cout << p << endl;
 

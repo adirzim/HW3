@@ -22,7 +22,7 @@ memPage_t::~memPage_t(){
 	delete[] buffer;
 }
 
-memPage_t::memPage_t(const memPage_t &m) : _capacity(m._capacity), _position(m._position), _size(m._capacity){
+memPage_t::memPage_t(const memPage_t &m) : _capacity(m._capacity), _position(m._position), _size(m._size){
 
 	_allocateBuffer();
 

@@ -103,7 +103,7 @@ template<class T> int memPool_t::read(T &t, int size){
 
 	char *pos = (char *)&t; //Get address of object to read
 
-	int tmp = ((memPage_t &) *_currentPage).read(t, size);
+	int tmp = ((memPage_t &) *_currentPage).read(pos, size);
 	int totalRead = tmp;
 
 
@@ -113,7 +113,7 @@ template<class T> int memPool_t::read(T &t, int size){
 		pos += tmp;
 
 		_currentPage++;
-		((memPage_t) *_currentPage).setPosition(0);
+		((memPage_t &) *_currentPage).setPosition(0);
 
 
 		tmp = ((memPage_t &) *_currentPage).read(pos, size);
@@ -147,9 +147,7 @@ template<class T> int memPool_t::write(const T &t, int size){
 
 	char *pos = (char *)&t; //Get address of object to write
 
-	int tmp = ((memPage_t &) *_currentPage).write(t, size);
-
-	memPage_t &p = ((memPage_t &) *_currentPage);
+	int tmp = ((memPage_t &) *_currentPage).write(pos, size);
 
 	int totalWrote = tmp;
 
