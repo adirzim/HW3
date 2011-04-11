@@ -50,20 +50,75 @@ int memPage_t::read(char *t, int size){
 	return _read(t, size, _position);
 }
 
+/************
+* Operators
+*************/
+
+const memPage_t &memPage_t::operator=(const memPage_t &m){
+    
+    if (this != &m){
+
+        if (_capacity != m._capacity){
+            
+            //Delete previous buffer
+            delete[] buffer;
+            _capacity = m._capacity;
+
+            //Allocate new buffer
+            _allocateBuffer();
+
+        }
+
+        //Set page properties
+        _size = m._size;
+        _position = m._position;
+                
+        //Copy data from m
+        memcpy(buffer, m.buffer, _capacity);
+    }
+
+    return *this;
+}
+
+/*
+ * Return true iff other page's size i larger then this page's size
+ */
+bool memPage_t::operator<(const memPage_t &m){
+    return (_size < m._size);
+}
+
+bool memPage_t::operator==(const memPage_t &m){
+    return (this == &m);
+}
+
+ostream &operator<<(ostream &os, memPage_t &p){
+
+	return os << "Defualt Page size: " << p.PageSize << '\n'
+				<< "Page capacity: " << p._capacity << '\n'
+				<< "Page size: " << p._size << '\n'
+				<< "Cursor Location: " << p._position;
+
+}
 
 /*****************
  * Private Methods
  *****************/
+
 void memPage_t::_allocateBuffer(){
 
 	buffer = new char[_capacity];
 
 }
 
+
+/*
+ * Write buffer from pos
+ * Return total written bytes
+ */
 int memPage_t::_write(char *t, int size, int pos){
 
 	//Do not allow "Holes" in mem page
-	if (pos > size){
+	if (pos > _size){
 		return 0;
 	}
 
@@ -79,25 +134,28 @@ int memPage_t::_write(char *t, int size, int pos){
 	//Update size & pos
 	_position = pos + size;
 
-//	if (_position > _size - 1){
-//		_size = _position + 1;
-//	}
-	_size += size;
-
-
-
-	return size;
+    if (_position > _size){
+        _size = _position;
+    }
+    
+    return size;
 
 }
 
+
+/*
+ * Read page into buffer from pos
+ * Return total read bytes
+ */
 int memPage_t::_read(char *t, int size, int pos){
 
-	//Do not allow reading more than size
-	if (pos > size - 1){
+	//Do not allow reading from empty position
+	if (pos > _size - 1){
 		return 0;
 	}
 
 	//Do not allow reading more than buffer size
+    //Read as much as we can
 	if (pos + size > _size){
 		size = _size - pos;
 	}
@@ -109,15 +167,6 @@ int memPage_t::_read(char *t, int size, int pos){
 	_position = pos + size;
 
 	return size;
-
-
 }
 
-ostream &operator<<(ostream &os, memPage_t &p){
 
-	return os << "Defualt Page size: " << p.PageSize << '\n'
-				<< "Page capacity: " << p._capacity << '\n'
-				<< "Page size: " << p._size << '\n'
-				<< "Cursor Location: " << p._position;
-
-}

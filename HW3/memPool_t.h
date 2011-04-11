@@ -10,8 +10,7 @@ class memPool_t{
 
 public:
 
-
-	//CTOR & DTOR
+	//CTORs & DTOR
 	memPool_t();										//default CTOR - 1 empty page
 	explicit memPool_t(int pageNumber);					//CTOR from number of empty page to initialize
 	~memPool_t();										//DTOR
@@ -20,11 +19,11 @@ public:
 	int GetCurrentPosition() const;						//get the current position in the memPool_t (how many bytes really written in memPool_t
 	void SetCurrentPosition(int newPosition);			//set the current position (between 0-PageSize)
 
-	template<class T> int read(T &t, int size);					//read data from manager
-	template<class T> int read(T &t, int size, int pos);
+	template<class T> int read(T &t, int size);					//read data from manager (from current position)
+	template<class T> int read(T &t, int size, int pos);        //read data from manager (from pos)
 
-	template<class T> int write(const T &t, int size);			//write data to manager
-	template<class T> int write(const T &t, int size, int pos);
+	template<class T> int write(const T &t, int size);			//write data to manager (from current position)
+	template<class T> int write(const T &t, int size, int pos); //write data to manage (from pos)
 
 	void createNewMemPage();							//create memory page upon demand
 
@@ -35,10 +34,10 @@ public:
 	int GetNumberOfPages() const;						//get the number of memory pages
 
 
-	//TODO: Should this be public?
-	const memPage_t &GetFirstMemPage() const;				//get pointer to the first memory page
-	const memPage_t &GetLastMemPgae() const;				//get pointer to the last memory page
-	memPage_t &GetCurrentMemPage();					//get pointer to the current memory page
+	//TODO: Should this be public? Should it be const?
+	memPage_t &GetFirstMemPage();        		       	//get ref to the first memory page
+	memPage_t &GetLastMemPage();			            //get ref to the last memory page
+	memPage_t &GetCurrentMemPage();					    //get ref to the current memory page
 
 	//default size of memPage
 	int GetDefaultPageSize() const;							//get default memory page size
@@ -49,19 +48,25 @@ public:
 private:
 
 	//disable copy
-	memPool_t(const memPool_t &m);						//disable copy CTOR
-	const memPool_t &operator=(const memPool_t &m);		//disable assignment operator
+	memPool_t(const memPool_t &m);						//disable copy CTOR             //Note: Not Implemented
+	const memPool_t &operator=(const memPool_t &m);		//disable assignment operator   //Note: Not Implemented
+
+    int _read(char *buffer, int size);                  //Read from pool size bytes into buffer. Return total read bytes
+    int _write(char *buffer, int size);                 //Write to pool size bytes from buffer. Return total written bytes
 
 	//Data Members
-	int _size;
-	int _capacity;
-	list<memPage_t>::iterator _currentPage;
-	int _position;
+	int _size;                                          //Total number of written bytes
+	int _capacity;                                      //Capacity of manager
+	list<memPage_t>::iterator _currentPage;             //Current memPage_t
+	int _position;                                      //Position (in bytes) from begining of manager
 
-	list<memPage_t> _pool;
+	list<memPage_t> _pool;                              //List (pool) of memPage_t in manager
 
 };
 
+/*******************
+ * Inline functions
+ *******************/
 inline bool memPool_t::IsEmpty() const{
 	return _size == 0;
 }
@@ -92,103 +97,45 @@ inline int memPool_t::GetCurrentPosition() const{
 	return _position;
 }
 
-/**
- * Read from current position
- */
-template<class T> int memPool_t::read(T &t, int size){
-
-	if (_position + size > GetActualSize()){ //Position + size > total written bytes!
-		return 0;
-	}
-
-	char *pos = (char *)&t; //Get address of object to read
-
-	int tmp = ((memPage_t &) *_currentPage).read(pos, size);
-	int totalRead = tmp;
-
-
-	while (tmp < size){
-
-		size -= tmp;
-		pos += tmp;
-
-		_currentPage++;
-		((memPage_t &) *_currentPage).setPosition(0);
-
-
-		tmp = ((memPage_t &) *_currentPage).read(pos, size);
-
-		totalRead += tmp;
-	}
-
-	//Update position
-	_position += totalRead;
-
-	return totalRead;
-
+inline memPage_t &memPool_t::GetCurrentMemPage(){
+	return ((memPage_t &) *_currentPage);
 }
 
-/**
- * Read from pos (setPosition & then read)
- */
+inline memPage_t &memPool_t::GetFirstMemPage(){
+    return (memPage_t &) *_pool.begin();
+}
+
+inline memPage_t &memPool_t::GetLastMemPage(){
+    return (memPage_t &) *(--_pool.end());
+}
+
+
+/*********************
+ * Template functions
+ *********************/
+
+template<class T> int memPool_t::read(T &t, int size){
+
+    return _read((char *)&t, size);
+}
+
 template<class T> int memPool_t::read(T &t, int size, int pos){
 
 	SetCurrentPosition(pos);
 
-	return read(t, size);
-
+	return _read((char *)&t, size);
 }
 
 template<class T> int memPool_t::write(const T &t, int size){
 
-	if (_position  > GetActualSize()){ //Don't allow "Holes" in memory
-		return 0;
-	}
-
-	char *pos = (char *)&t; //Get address of object to write
-
-	int tmp = ((memPage_t &) *_currentPage).write(pos, size);
-
-	int totalWrote = tmp;
-
-	while (tmp < size){
-
-		size -= tmp;
-		pos += tmp;
-
-		
-		_currentPage++;
-
-        if (_currentPage == _pool.end()){
-            //Create new page
-            createNewMemPage();
-        }
-
-		((memPage_t &) *_currentPage).setPosition(0);
-
-
-		tmp = ((memPage_t &) *_currentPage).write(pos, size);
-
-		totalWrote += tmp;
-	}
-
-	_position += totalWrote;
-	_size += totalWrote;
-
-	return totalWrote;
-
+	return _write((char *)&t, size);
 }
 
 template<class T> int memPool_t::write(const T &t, int size, int pos){
 
 	SetCurrentPosition(pos);
 
-	return write(t, size);
-
-}
-
-inline memPage_t &memPool_t::GetCurrentMemPage(){
-	return ((memPage_t &) *_currentPage);
+	return _write((char *)&t, size);
 }
 
 #endif

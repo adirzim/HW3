@@ -34,7 +34,12 @@ int main (int argc, int **argv){
 
 	Person j, l;
 
-    //memPage_t::PageSize = 2;
+   
+    int c = 10;
+    int d;
+   
+
+    memPage_t::PageSize = 4;
 
     memPool_t pool;
 
@@ -57,7 +62,7 @@ int main (int argc, int **argv){
 	//cout << p << endl;
 
 	pool.read(j, sizeof(j), 0);
-    pool.read(l, sizeof(l), 16);
+    pool.read(l, sizeof(l));
 
 	cout << "j: " << j << endl;
     
@@ -71,13 +76,11 @@ int main (int argc, int **argv){
     pool.read(j, sizeof(j), 0);
     pool.read(l, sizeof(l));
 
-    cout << sizeof(p) << endl;
+    //cout << sizeof(p) << endl;
 	
 	cout << "j: " << j << endl;
     
 	cout << "l: " << l << endl;
-
-
 
 
 
