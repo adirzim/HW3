@@ -13,9 +13,22 @@ using namespace std;
 
 class Person {
 public:
+
+    Person ();
+    Person (int age, double height);
+
     int age;
     double height;
 };
+
+Person::Person(int age, double height) {
+    this->age = age;
+    this->height = height;
+}
+
+Person::Person() : age(0), height(0){
+    
+}
 
 //********** variable decleration**********/
 
@@ -23,7 +36,6 @@ int i,j,k,l,m;
 
 //********** Method decleration **********/
 
-Person createPerson(int age, double height);
 void write( memPool_t &pool );
 
 //********** other stored type **********/
@@ -43,8 +55,8 @@ void DoOtherActions( memPool_t &pool );
 
 
 int main (int argc, int **argv){
-
-	memPool_t pool;
+    
+   	memPool_t pool;
 
 	while (1)
 	{
@@ -91,35 +103,27 @@ int main (int argc, int **argv){
 	return 1;
 }
 
-Person createPerson(int age, double height){
-
-	Person p;
-
-    p.age = age;
-    p.height = height;
-
-	return p;
-}
 
 void write( memPool_t &pool )
 {
 	int intValue;
 	int position;
+    Person p;
 
 	if ((i > 0)&&(5 > i)){
 		switch(i){
 			case 1:
 				int age;
 				double height;
-				Person p;
-
+                
+				
 				cout << "enter age:";
 				cin >> age;
 				cout << endl;
 				cout << "enter height:";
 				cin >> height;
 				cout << endl;
-				p = createPerson(age, height);
+                p.age = age; p.height = height;
 				position = pool.GetCurrentPosition();
 				pool.write<Person> (p, sizeof(p));
 
@@ -165,6 +169,7 @@ void write( memPool_t &pool )
 void read( memPool_t &pool )
 {
 	int position;
+    Person p;
 
 	cout << "enter position: ";
 	cin >> position;
@@ -172,7 +177,7 @@ void read( memPool_t &pool )
 
 	switch (i){
 		case 1:
-			Person p;
+			
 			pool.read<Person> (p, sizeof(p),position);
 			cout << "Person with age: " << p.age << " and height: " << p.height << " was read from position: " << position << endl;
 			break;

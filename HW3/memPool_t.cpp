@@ -1,4 +1,5 @@
 #include "memPool_t.h"
+#include "memPage_t.h"
 
 #include <list>
 
@@ -30,6 +31,11 @@ memPool_t::memPool_t(int pageNumber) : _size(0), _capacity(0), _position(0){
 
 memPool_t::~memPool_t(){
 
+    //Extract all memPages from _pool and delete them
+    for (list<memPage_t *>::iterator it = _pool.begin(); it != _pool.end(); it++){
+        delete (memPage_t *) *it;
+    }
+
 }
 
 /************
@@ -51,9 +57,10 @@ ostream &operator<< (ostream &os, memPool_t &p){
 
 void memPool_t::createNewMemPage(){
 
-	memPage_t page;
+	memPage_t *page = new memPage_t; 
 
-	_capacity += page.GetCapacity();
+       
+	_capacity += page->GetCapacity();
 
 	_pool.push_back(page);
 }
@@ -68,16 +75,16 @@ void memPool_t::SetCurrentPosition(int newPosition){
 
 	_position = 0;
 
-	list<memPage_t>::iterator it = _pool.begin();
+	list<memPage_t *>::iterator it = _pool.begin();
 
 	//Find relevant page
-    while (newPosition >= ((memPage_t &) *it).GetCapacity()){
+    while (newPosition >= ((memPage_t *) *it)->GetCapacity()){
 
         //Subtract from position capacity of current page
-		newPosition -= ((memPage_t &) *it).GetCapacity();
+		newPosition -= ((memPage_t *) *it)->GetCapacity();
 
         //Update _position
-		_position += ((memPage_t &) *it).GetCapacity();
+		_position += ((memPage_t *) *it)->GetCapacity();
 
         //Advance to next page
 		it++;
@@ -91,7 +98,7 @@ void memPool_t::SetCurrentPosition(int newPosition){
 	_position += newPosition;
 
 	//Set Position in page
-	((memPage_t &) *it).setPosition(newPosition);
+	((memPage_t *) *it)->setPosition(newPosition);
 }
 
 /*****************
@@ -194,7 +201,7 @@ int memPool_t::_write(char *buffer, int size){
         GetCurrentMemPage().setPosition(0);
 
         //Write next chunk of bytes
-		tmp = ((memPage_t &) *_currentPage).write(buffer, size);
+        tmp = GetCurrentMemPage().write(buffer, size);
 
         //Update total bytes written
 		totalWrote += tmp;
@@ -214,8 +221,6 @@ int memPool_t::_write(char *buffer, int size){
     if (_position > _size){
         _size = _position;
     }
-
-	//_size += totalWrote;
 
 	return totalWrote;
 }

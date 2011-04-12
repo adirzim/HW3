@@ -57,10 +57,10 @@ private:
 	//Data Members
 	int _size;                                          //Total number of written bytes
 	int _capacity;                                      //Capacity of manager
-	list<memPage_t>::iterator _currentPage;             //Current memPage_t
+	list<memPage_t *>::iterator _currentPage;            //Current memPage_t *
 	int _position;                                      //Position (in bytes) from begining of manager
 
-	list<memPage_t> _pool;                              //List (pool) of memPage_t in manager
+	list<memPage_t *> _pool;                              //List (pool) of memPage_t pointers in manager
 
 };
 
@@ -98,15 +98,15 @@ inline int memPool_t::GetCurrentPosition() const{
 }
 
 inline memPage_t &memPool_t::GetCurrentMemPage(){
-	return ((memPage_t &) *_currentPage);
+	return *((memPage_t *) *_currentPage);
 }
 
 inline memPage_t &memPool_t::GetFirstMemPage(){
-    return (memPage_t &) *_pool.begin();
+    return *(memPage_t *) *_pool.begin();
 }
 
 inline memPage_t &memPool_t::GetLastMemPage(){
-    return (memPage_t &) *(--_pool.end());
+    return *(memPage_t *) *(--_pool.end());
 }
 
 

@@ -13,10 +13,7 @@ public:
 
 	//Static Member
 	static int PageSize;								//Default Page Size
-
-
-	~memPage_t();										//DTOR
-    memPage_t(const memPage_t &m);						//Copy CTOR for STL implementation
+	~memPage_t();										//DTOR  
 	
 
 	void setPosition(int position);						//set current position in memory page (value between 0 to _size)
@@ -36,26 +33,21 @@ public:
 
 
 	friend ostream &operator<<(ostream &os, memPage_t &p);
-    friend class memPool_t;
     
-
-
-    //Operator Overloading (To enable memPage_t in an STL container)
-	const memPage_t &operator=(const memPage_t &m);		
-    bool operator<(const memPage_t &m);
-    bool operator==(const memPage_t &m);
-    
-
-    //TODO: Do we need this?
-	//memPage_t* NextPage();								//a pointer to the next page
-	//memPage_t* PreviousPage();							//a pointer to the previous page
+    //Allow creation of memPage_t only from memPool_t
+    friend class memPool_t;      
 	
+    
 private:
     
     //CTORs. 
-    //Do not allow initialization (Except for memPool_t)
-	memPage_t();										//default CTOR - from PageSize
-	explicit memPage_t(int size);								//CTOR from user size
+    //Do not allow initialization (Except from friend memPool_t)
+    memPage_t();										//default CTOR - from PageSize
+	explicit memPage_t(int size);						//CTOR from user size
+	
+    //Disable copy of memPage_t
+    memPage_t(const memPage_t &m);						//Note: Not Implemented
+    const memPage_t &operator=(const memPage_t &m);	    //Note: Not Implemented 
 
 	void _allocateBuffer(); 							//Init memPage buffer
 
