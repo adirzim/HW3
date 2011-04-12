@@ -63,7 +63,7 @@ int main (int argc, int **argv){
 		cout << "Choose action:" << endl
 			<< "*************" << endl
 			<< "1- read/write		2 - information" << endl
-			<< "3- other action" <<endl;
+			<< "3- other action		4 - exit" <<endl;
 		cin >> k;
 		cout << endl;
 
@@ -96,6 +96,8 @@ int main (int argc, int **argv){
 			case 3:
 				DoOtherActions(pool);
 				continue;
+			case 4:
+				exit(1);
 		}
 		cout << endl;
 	}
