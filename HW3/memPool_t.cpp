@@ -61,7 +61,6 @@ void memPool_t::createNewMemPage(){
 
 void memPool_t::SetCurrentPosition(int newPosition){
 
-	//TODO: Implement in LOG(n)
 
 	if (newPosition > _size){ //Invalid position
 		return;
