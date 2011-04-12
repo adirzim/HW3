@@ -19,7 +19,7 @@ public:
 
 //********** variable decleration**********/
 
-int i,j;
+int i,j,k,l,m;
 
 //********** Method decleration **********/
 
@@ -37,6 +37,10 @@ ostream &operator<<(ostream &os, Person &p){
 
 void read( memPool_t &pool );
 
+void GetInformation( memPool_t &pool );
+
+void DoOtherActions( memPool_t &pool );
+
 
 int main (int argc, int **argv){
 
@@ -44,26 +48,44 @@ int main (int argc, int **argv){
 
 	while (1)
 	{
-		cout << "Chose type:" << endl
-			<< "***********" << endl
-			<< "1 - Person			2 - int" << endl
-			<< "3 - double			4 - char" << endl;
-		cin >> i;
+		cout << "Choose action:" << endl
+			<< "*************" << endl
+			<< "1- read/write		2 - information" << endl
+			<< "3- other action" <<endl;
+		cin >> k;
 		cout << endl;
 
-		cout << "Choose action:" <<endl
-			<< "**************" << endl
-			<< "1- read				2 - write" <<endl;
-		cin >> j;
-
-		switch(j){
+		switch(k){
 			case 1:
-				read(pool);
+				cout << "Choose type:" << endl
+					<< "***********" << endl
+					<< "1 - Person			2 - int" << endl
+					<< "3 - double			4 - char" << endl;
+				cin >> i;
+				cout << endl;
+
+				cout << "Choose action:" <<endl
+					<< "**************" << endl
+					<< "1- read				2 - write" <<endl;
+				cin >> j;
+
+				switch(j){
+					case 1:
+						read(pool);
+						break;
+					case 2:
+						write(pool);
+						break;
+						}
 				continue;
 			case 2:
-				write(pool);
+				GetInformation(pool);
+				continue;
+			case 3:
+				DoOtherActions(pool);
 				continue;
 		}
+		cout << endl;
 	}
 
 	return 1;
@@ -171,4 +193,77 @@ void read( memPool_t &pool )
 			break;
 	}
 	cout << endl;
+}
+
+void GetInformation( memPool_t &pool )
+{
+	cout << "Choose action:" << endl
+		<<"***************"<< endl
+		<< "1- Is Empty?		2- actual size of poll" << endl
+		<< "3- capacity		4- number of pages" << endl
+		<< "5- get 1st page		6- get last page" << endl
+		<< "7- get current page	8- get current position" << endl
+		<< "9- get default page size" << endl;
+	cin >> l;
+	switch (l)
+	{
+	case 1:
+		cout << (pool.IsEmpty() ? "yes" : "no") << endl;
+		break;
+	case 2:
+		cout << pool.GetActualSize() << endl;
+		break;
+	case 3:
+		cout << pool.GetCapacity()<< endl;
+		break;
+	case 4:
+		cout << pool.GetNumberOfPages()<< endl;
+		break;
+	case 5:
+		cout << pool.GetFirstMemPage()<< endl;
+		break;
+	case 6:
+		cout << pool.GetLastMemPage()<< endl;
+		break;
+	case 7:
+		cout << pool.GetCurrentMemPage()<< endl;
+		break;
+	case 8:
+		cout << pool.GetCurrentPosition()<<endl;
+		break;
+	case 9:
+		cout << pool.GetDefaultPageSize()<<endl;
+		break;
+	}
+}
+
+void DoOtherActions( memPool_t &pool )
+{
+	cout << "Choose action:"
+		<<"***************" <<endl
+		<<"1- set default page size" << endl
+		<<"2- set current position" << endl
+		<<"3- create new page" << endl;
+	cin >> m;
+	switch (m)
+	{
+	case 1:
+		int size;
+		cout << "enter size:";
+		cin >> size;
+		cout << endl;
+		pool.SetDefaultPageSize(size);
+		break;
+	case 2:
+		int pos;
+		cout << "enter position:";
+		cin >> pos;
+		cout << endl;
+		pool.SetCurrentPosition(pos);
+		break;
+	case 3:
+		pool.createNewMemPage();
+		cout << " new page has been created" << endl;
+		break;
+	}
 }
