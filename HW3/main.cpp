@@ -2,8 +2,6 @@
  * main.cpp
  *
  */
-
-#include "memPage_t.h"
 #include "memPool_t.h"
 #include <iostream>
 
@@ -96,6 +94,7 @@ int main (int argc, int **argv){
 			case 3:
 				DoOtherActions(pool);
 				continue;
+            default:
 			case 4:
 				exit(1);
 		}
@@ -163,6 +162,8 @@ void write( memPool_t &pool )
 
 				cout << "char with the value of: " << charValue << " was written to position: " << position << endl;
 				break;
+            default:
+                break;
 		}
 	}
 	cout << endl;
@@ -198,6 +199,8 @@ void read( memPool_t &pool )
 			pool.read(charValue,sizeof(charValue),position);
 			cout << "char with value of " << charValue << " was read from position: " << position << endl;
 			break;
+        default:
+            break;
 	}
 	cout << endl;
 }
@@ -241,6 +244,8 @@ void GetInformation( memPool_t &pool )
 	case 9:
 		cout << pool.GetDefaultPageSize()<<endl;
 		break;
+    default:
+        break;
 	}
 }
 
@@ -272,5 +277,8 @@ void DoOtherActions( memPool_t &pool )
 		pool.createNewMemPage();
 		cout << " new page has been created" << endl;
 		break;
+    default:
+        break;
+
 	}
 }
